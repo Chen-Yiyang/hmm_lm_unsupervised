@@ -36,7 +36,7 @@ True_E = np.array([[0.8, 0.0],
                    [0.1, 1.0]])
 
 # try Baum Welch
-obs_seq, states = generate_HMM_observation(200, True_pi, True_T, True_E)
+obs_seq, states = generate_HMM_observation(50, True_pi, True_T, True_E)
 init_pi = np.array([0.5, 0.5])
 init_T = np.array([[0.5, 0.5],
                   [0.5, 0.5]])
@@ -46,7 +46,7 @@ init_E = np.array([[0.3, 0.2],
 
 model =  HiddenMarkovModel(init_T, init_E, init_pi, epsilon=0.0001, maxStep=12)
 
-trans0, transition, emission, c = model.run_Baum_Welch_EM(obs_seq, summary=False, monitor_state_1=True)
+trans0, transition, emission, c = model.run_Baum_Welch_EM(obs_seq, summary=True, monitor_state_1=True)
 
 print("Transition Matrix: ")
 print(transition)

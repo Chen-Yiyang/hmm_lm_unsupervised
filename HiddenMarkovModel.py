@@ -21,7 +21,8 @@ class HiddenMarkovModel(object):
     - T0: Initial state probabilities of size S.
     """
 
-    def __init__(self, T, E, T0, epsilon = 0.001, maxStep = 10):
+    # initially epsilon = 0.001
+    def __init__(self, T, E, T0, epsilon = 0.01, maxStep = 10):
         
         with tf.name_scope('Inital_Parameters'):
             with tf.name_scope('Scalar_constants'):
@@ -245,8 +246,7 @@ class HiddenMarkovModel(object):
         
         return T0_new, T_new
     
-    def check_convergence(self, new_T0, new_transition, new_emission):
-        
+    def check_convergence(self, new_T0, new_transition, new_emission):        
         delta_T0 = tf.reduce_max(tf.abs(self.T0 - new_T0)) < self.epsilon
         delta_T = tf.reduce_max(tf.abs(self.T - new_transition)) < self.epsilon
         delta_E = tf.reduce_max(tf.abs(self.E - new_emission)) < self.epsilon
@@ -337,7 +337,7 @@ class HiddenMarkovModel(object):
             for i in range(self.maxStep):
                 
                 with tf.name_scope('EM_step-%s' %i):
-                    converged = self.expectation_maximization_step(x)
+                    converged = self.expectation_maximization_step(x) 
 
 #         TF while_loop op is buggy, should be fixed in future release
 #         def loop_conditions(converged, obs_seq):
@@ -369,27 +369,9 @@ class HiddenMarkovModel(object):
             
             if summary:
                 # Instantiate a SummaryWriter to output summaries and the Graph.
-                summary_writer = tf.train.SummaryWriter('logs/', graph=sess.graph)
+                summary_writer = tf.summary.FileWriter('logs/', graph=sess.graph)
                 
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str)
 
             return trans0, transition, emission, c
-
-
-
-
-
-# main
-
-# for testing
-p0 = np.array([0.6, 0.4])
-emi = np.array([[0.5, 0.1],
-                [0.4, 0.3],
-                [0.1, 0.6]])
-trans = np.array([[0.7, 0.3],
-                  [0.4, 0.6]])
-
-states = {0:'Healthy', 1:'Fever'}
-obs = {0:'normal', 1:'cold', 2:'dizzy'}
-obs_seq = np.array([0, 0, 1, 2, 2])
